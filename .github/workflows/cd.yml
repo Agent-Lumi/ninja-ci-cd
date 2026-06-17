@@ -154,7 +154,7 @@ jobs:
 
       - name: 📣 GitHub Release Notification
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const { data: release } = await github.rest.repos.createRelease({
