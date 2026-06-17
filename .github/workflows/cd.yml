@@ -23,7 +23,7 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: 🌙 Shadow Step - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -50,7 +50,7 @@ jobs:
       id-token: write
     steps:
       - name: 🌙 Shadow Step - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🐳 Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -96,7 +96,7 @@ jobs:
       url: https://ninja-ci-cd.example.com
     steps:
       - name: 🌙 Shadow Step - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🥷 Prepare Deployment
         run: |
