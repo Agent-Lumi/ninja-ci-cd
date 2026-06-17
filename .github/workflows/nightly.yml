@@ -23,7 +23,7 @@ jobs:
       security-events: write
     steps:
       - name: 🌙 Shadow Step - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🔮 Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🌙 Shadow Step - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🌙 Shadow Step - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🐳 Setup Docker
         uses: docker/setup-buildx-action@v3
