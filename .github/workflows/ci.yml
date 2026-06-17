@@ -150,7 +150,7 @@ jobs:
       - name: 📊 Upload Container Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ninja-container-py${{ matrix.python-version }}
+          name: ninja-container
           path: ninja-container.tar.gz
 
   # 🔒 Phase 4: Security Ritual
@@ -170,6 +170,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📥 Download Container Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ninja-container
+          path: .
+
+      - name: 🐳 Load Container Image
+        run: |
+          echo "🥷 Loading container image..."
+          docker load < ninja-container.tar.gz
 
       - name: 📦 Install Dependencies
         run: |
