@@ -56,7 +56,7 @@ jobs:
           bandit -r src/ || true
 
       - name: 📊 Upload Security Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: bandit-security-report
@@ -100,7 +100,7 @@ jobs:
           PYTHONPATH: src
 
       - name: 📊 Upload Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report-py${{ matrix.python-version }}
           path: |
@@ -148,7 +148,7 @@ jobs:
           docker save ninja-ci-cd:${{ github.sha }} | gzip > ninja-container.tar.gz
 
       - name: 📊 Upload Container Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ninja-container
           path: ninja-container.tar.gz
@@ -201,7 +201,7 @@ jobs:
           exit-code: 0
 
       - name: 📊 Upload Security Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: security-reports
