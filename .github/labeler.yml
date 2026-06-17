@@ -1,0 +1,82 @@
+# Auto-labeler configuration for Ninja CI/CD
+# Labels are automatically applied based on file changes
+
+# 🐍 Python code changes
+python:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/**/*.py'
+          - 'tests/**/*.py'
+
+# 🐳 Docker changes
+docker:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'Dockerfile'
+          - 'docker-compose.yml'
+          - '.dockerignore'
+
+# 📦 Dependencies
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'requirements*.txt'
+          - 'pyproject.toml'
+          - 'Pipfile'
+          - 'poetry.lock'
+
+# 🧪 Tests
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'tests/**/*'
+          - 'pytest.ini'
+          - 'conftest.py'
+
+# 📚 Documentation
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**/*'
+          - 'README.md'
+          - 'CONTRIBUTING.md'
+          - 'CHANGELOG.md'
+          - 'LICENSE'
+
+# 🐙 CI/CD changes
+ci-cd:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**/*'
+          - '.github/dependabot.yml'
+          - '.pre-commit-config.yaml'
+
+# ⚙️ Configuration
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.yaml'
+          - '*.yml'
+          - '*.toml'
+          - '*.cfg'
+          - '*.ini'
+
+# 🥷 Core ninja code
+ninja-core:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/ninja/core.py'
+
+# ⚔️ Ninja skills code
+ninja-skills:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/ninja/skills.py'
+
+# 🌐 Web application
+web-app:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/ninja/app.py'
+          - 'static/**/*'
+          - 'templates/**/*'

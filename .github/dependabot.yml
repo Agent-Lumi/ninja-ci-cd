@@ -1,0 +1,66 @@
+version: 2
+updates:
+  # 🐍 Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "⬆️ deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+    reviewers:
+      - "Agent-Lumi"
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # 🐳 Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "⬆️ docker"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # 🐙 GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "⬆️ actions"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # 🧪 Development dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+    commit-message:
+      prefix: "⬆️ dev-deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "development"
+    target-branch: "develop"

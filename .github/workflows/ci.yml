@@ -1,0 +1,220 @@
+# 🥷 Ninja CI/CD - Main CI Workflow
+# The Way of the Shadow: Comprehensive testing on every pull request
+
+name: 🥷 Shadow Strike CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.12'
+  NINJA_CLAN: Shadow CI/CD
+
+jobs:
+  # ⚔️ Phase 1: Code Reconnaissance
+  lint-and-format:
+    name: 🔍 Code Reconnaissance
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🌙 Shadow Step - Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Summon Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Prepare Ninja Tools
+        run: |
+          pip install black flake8 isort bandit
+          pip install -e ".[dev]"
+
+      - name: ⚔️ Swift Strike - Black Formatting
+        run: |
+          echo "🥷 Checking code style with Black..."
+          black --check --diff src/ tests/
+
+      - name: 🌪️ Whirlwind - Import Sorting
+        run: |
+          echo "🥷 Organizing imports with isort..."
+          isort --check-only --diff src/ tests/
+
+      - name: 🔥 Dragon Fire - Lint Check
+        run: |
+          echo "🥷 Scanning for code smells with Flake8..."
+          flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503
+
+      - name: 🛡️ Secret Scan - Bandit Security
+        run: |
+          echo "🥷 Searching for exposed secrets..."
+          bandit -r src/ -f json -o bandit-report.json || true
+          bandit -r src/ || true
+
+      - name: 📊 Upload Security Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
+
+  # 🧪 Phase 2: Trial by Combat
+  test-matrix:
+    name: ⚔️ Trial by Combat (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - name: 🌙 Shadow Step - Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Summon Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: 📦 Prepare Ninja Arsenal
+        run: |
+          pip install --upgrade pip
+          pip install pytest pytest-cov pytest-html pytest-xdist
+          pip install -e ".[dev]"
+
+      - name: 🧪 Shadow Clone Jutsu - Run Tests
+        run: |
+          echo "🥷 Executing tests in parallel..."
+          pytest tests/ -v \
+            --cov=src/ninja \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --html=test-report.html \
+            -n auto
+        env:
+          PYTHONPATH: src
+
+      - name: 📊 Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-py${{ matrix.python-version }}
+          path: |
+            htmlcov/
+            test-report.html
+            coverage.xml
+
+      - name: 📈 Upload to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.12'
+        with:
+          files: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  # 🐳 Phase 3: Container Mastery
+  docker-build:
+    name: 📦 Container Crafting
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🌙 Shadow Step - Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐳 Summon Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔨 Forge Container
+        run: |
+          echo "🥷 Building ninja container..."
+          docker build -t ninja-ci-cd:${{ github.sha }} .
+          docker tag ninja-ci-cd:${{ github.sha }} ninja-ci-cd:latest
+
+      - name: 🧪 Test Container
+        run: |
+          echo "🥷 Testing container stealth capabilities..."
+          docker run -d -p 5000:5000 --name ninja-test ninja-ci-cd:${{ github.sha }}
+          sleep 5
+          docker exec ninja-test curl -f http://localhost:5000/api/health || exit 1
+          docker stop ninja-test
+          docker rm ninja-test
+
+      - name: 📦 Export Container
+        run: |
+          docker save ninja-ci-cd:${{ github.sha }} | gzip > ninja-container.tar.gz
+
+      - name: 📊 Upload Container Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ninja-container-py${{ matrix.python-version }}
+          path: ninja-container.tar.gz
+
+  # 🔒 Phase 4: Security Ritual
+  security-scan:
+    name: 🔒 Security Ritual
+    runs-on: ubuntu-latest
+    needs: [docker-build]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: 🌙 Shadow Step - Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Summon Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install Dependencies
+        run: |
+          pip install safety pip-audit
+
+      - name: 🔍 Dependency Vulnerability Scan
+        run: |
+          echo "🥷 Scanning for vulnerable dependencies..."
+          safety check --json --output safety-report.json || true
+          pip-audit --format=json --output=pip-audit-report.json || true
+
+      - name: 🐳 Container Security Scan - Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ninja-ci-cd:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: 0
+
+      - name: 📊 Upload Security Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            safety-report.json
+            pip-audit-report.json
+            trivy-results.sarif
+
+  # 🏁 Phase 5: Mission Report
+  ci-summary:
+    name: 📜 Mission Report
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, test-matrix, docker-build, security-scan]
+    if: always()
+    steps:
+      - name: 📊 Generate Report
+        run: |
+          echo "# 🥷 Ninja CI/CD Mission Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Reconnaissance | ${{ needs.lint-and-format.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Trial by Combat | ${{ needs.test-matrix.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Container Crafting | ${{ needs.docker-build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Ritual | ${{ needs.security-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> 🥷 The ninja code has been tested with stealth and precision!" >> $GITHUB_STEP_SUMMARY
