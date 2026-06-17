@@ -127,10 +127,10 @@ class NinjaSkills:
     def _update_skill_level(self):
         """Update overall skill level based on mastered techniques"""
         total_difficulty = sum(
-            t.difficulty for t in self.TECHNIQUES 
+            t.difficulty for t in self.TECHNIQUES
             if t.name in self.mastered_techniques
         )
-        self.skill_level = 1 + (total_difficulty // 20)
+        self.skill_level = 1 + (total_difficulty // 10)
     
     def _calculate_grade(self, score: int) -> str:
         """Calculate letter grade from score"""
