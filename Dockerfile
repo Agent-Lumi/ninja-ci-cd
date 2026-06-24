@@ -1,7 +1,7 @@
 # 🐳 Ninja CI/CD Container
 # Multi-stage build for production-ready ninja applications
 
-FROM python:3.12-slim AS base
+FROM python:3.14-slim AS base
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
